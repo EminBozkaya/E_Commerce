@@ -3,8 +3,7 @@
   <img src="https://img.shields.io/badge/C%23-14-239120?style=for-the-badge&logo=csharp&logoColor=white" />
   <img src="https://img.shields.io/badge/PostgreSQL-16-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" />
   <img src="https://img.shields.io/badge/EF%20Core-10.0-512BD4?style=for-the-badge&logo=dotnet&logoColor=white" />
-  <img src="https://img.shields.io/badge/Architecture-Clean%20%2B%20CQRS-blueviolet?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Architecture | DDD-Clean%20%2B%20CQRS-blueviolet?style=for-the-badge" />
 </p>
 
 <h1 align="center">🛒 ECommerce Platform</h1>

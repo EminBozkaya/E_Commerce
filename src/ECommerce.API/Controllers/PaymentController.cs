@@ -15,9 +15,9 @@ public class PaymentController : ControllerBase
     public async Task<IActionResult> Process([FromBody] ProcessPaymentRequest req, CancellationToken ct)
     {
         var paymentId = await _mediator.Send(
-            new ProcessPaymentCommand(req.OrderId, req.PaymentToken), ct);
+            new ProcessPaymentCommand(req.OrderId, req.PaymentToken, req.IdempotencyKey), ct);
         return Ok(new { paymentId });
     }
 }
 
-public record ProcessPaymentRequest(Guid OrderId, string PaymentToken);
+public record ProcessPaymentRequest(Guid OrderId, string PaymentToken, string IdempotencyKey);

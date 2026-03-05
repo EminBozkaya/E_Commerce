@@ -13,17 +13,20 @@ public class PaymentRecord : BaseAuditableEntity
     public string? ProviderTransactionId { get; private set; }
     public PaymentStatus Status { get; private set; }
     public string? FailureReason { get; private set; }
+    public string IdempotencyKey { get; private set; } = default!;
 
     private PaymentRecord() { }
 
-    public static PaymentRecord CreatePending(Guid orderId, Money amount, string provider)
+    public static PaymentRecord CreatePending(Guid orderId, Money amount, string provider, string idempotencyKey)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(provider);
+        ArgumentException.ThrowIfNullOrWhiteSpace(idempotencyKey);
         return new PaymentRecord
         {
             OrderId = orderId,
             Amount = amount,
             Provider = provider,
+            IdempotencyKey = idempotencyKey,
             Status = PaymentStatus.Pending,
             CreatedAt = DateTime.UtcNow
         };

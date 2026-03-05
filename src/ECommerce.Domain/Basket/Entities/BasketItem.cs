@@ -7,21 +7,27 @@ public class BasketItem : BaseEntity
 {
     public Guid ProductId { get; private set; }
     public string ProductName { get; private set; } = default!;
-    public Money UnitPrice { get; private set; } = default!;
+
+    /// <summary>
+    /// Price captured at the moment the item was added to the basket.
+    /// This snapshot is never updated from Product — it preserves the price the user saw.
+    /// </summary>
+    public Money UnitPriceSnapshot { get; private set; } = default!;
+
     public int Quantity { get; private set; }
 
-    public Money TotalPrice => UnitPrice.Multiply(Quantity);
+    public Money LineTotalSnapshot => UnitPriceSnapshot.Multiply(Quantity);
 
     private BasketItem() { }
 
-    public static BasketItem Create(Guid productId, string productName, Money unitPrice, int quantity)
+    public static BasketItem Create(Guid productId, string productName, Money unitPriceSnapshot, int quantity)
     {
         if (quantity <= 0) throw new ArgumentException("Quantity must be positive.");
         return new BasketItem
         {
             ProductId = productId,
             ProductName = productName,
-            UnitPrice = unitPrice,
+            UnitPriceSnapshot = unitPriceSnapshot,
             Quantity = quantity
         };
     }

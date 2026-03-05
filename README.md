@@ -34,9 +34,9 @@
 ### 🛍️ Customer Experience
 - **Guest checkout** — shop without registration
 - **Membership system** — optional account creation
-- **Smart basket** — persistent cart for both guests & members
+- **Smart basket** — persistent cart with price snapshots for both guests & members
 - **Product catalog** — browse by categories
-- **Secure payments** — tokenized credit card processing
+- **Secure payments** — tokenized, idempotent credit card processing
 - **Order tracking** — real-time order status
 
 </td>
@@ -56,9 +56,7 @@
 
 ---
 
-## 🏗️ Architecture
-
-This project follows **Modular Monolith** architecture with strict **Clean Architecture** layer separation, **CQRS** pattern via MediatR, and **Domain-Driven Design** principles.
+This project follows **Modular Monolith** architecture with strict **Clean Architecture** layer separation, **CQRS** pattern via MediatR, and **Domain-Driven Design** principles. Automated architecture validation is enforced via `NetArchTest.Rules`.
 
 ```
 ┌──────────────────────────────────────────────────────────┐
@@ -81,8 +79,8 @@ This project follows **Modular Monolith** architecture with strict **Clean Archi
 │  │  ─────────────────────────────────────────────── │   │
 │  │  • Commands & Queries (CQRS via MediatR)          │   │
 │  │  • Validation Pipeline (FluentValidation)         │   │
-│  │  • Logging Pipeline                               │   │
-│  │  • Interface Abstractions (IApplicationDbContext)  │   │
+│  │  • Logging Pipeline (Serilog)                     │   │
+│  │  • NO EF Core dependency                          │   │
 │  └──────────────────────┬────────────────────────────┘   │
 │                         │                                │
 │                         ▼                                │
@@ -91,6 +89,7 @@ This project follows **Modular Monolith** architecture with strict **Clean Archi
 │  │  ─────────────────────────────────────────────── │   │
 │  │  • Entities & Aggregates                          │   │
 │  │  • Value Objects (Money, StockQuantity)            │   │
+│  │  • Aggregate Repository Interfaces                │   │
 │  │  • Business Invariants                            │   │
 │  │  • ZERO infrastructure dependencies               │   │
 │  └───────────────────────────────────────────────────┘   │
@@ -104,7 +103,7 @@ This project follows **Modular Monolith** architecture with strict **Clean Archi
 | 🏪 **Catalog** | Products, categories, stock management |
 | 🛒 **Basket** | Shopping cart for guests & registered users |
 | 📦 **Ordering** | Order creation, lifecycle & state machine |
-| 💳 **Payment** | Tokenized payment processing |
+| 💳 **Payment** | Tokenized, idempotent payment processing |
 | 🔐 **Identity** | Authentication, JWT, role management |
 
 ---
@@ -116,26 +115,26 @@ ECommerce/
 ├── 📄 ECommerce.sln
 └── src/
     ├── 🔵 ECommerce.Domain/           ← Pure domain (zero dependencies)
-    │   ├── Common/                     BaseEntity, BaseAuditableEntity, IRepository
-    │   ├── Catalog/                    Product, Category, Money, StockQuantity
-    │   ├── Basket/                     Basket, BasketItem
-    │   ├── Ordering/                   Order, OrderItem, OrderStatus
-    │   ├── Payment/                    PaymentRecord, PaymentStatus
-    │   └── Identity/                   AppUser, UserRole
+    │   ├── Common/                     BaseEntity, BaseAuditableEntity
+    │   ├── Catalog/                    Product, Category, Money, StockQuantity, IProductRepository, ICategoryRepository
+    │   ├── Basket/                     Basket, BasketItem (price snapshot), IBasketRepository
+    │   ├── Ordering/                   Order, OrderItem, OrderStatus, IOrderRepository
+    │   ├── Payment/                    PaymentRecord (idempotency), PaymentStatus, IPaymentRepository
+    │   └── Identity/                   AppUser, UserRole, IUserRepository
     │
-    ├── 🟢 ECommerce.Application/      ← CQRS Commands & Queries
-    │   ├── Common/                     IApplicationDbContext, Behaviors
+    ├── 🟢 ECommerce.Application/      ← CQRS Commands & Queries (NO EF Core)
+    │   ├── Common/                     Behaviors (Logging, Validation)
     │   ├── Catalog/Commands|Queries/   CreateProduct, GetProducts...
     │   ├── Basket/Commands|Queries/    AddToBasket, GetBasket...
-    │   ├── Ordering/Commands|Queries/  CreateOrder, GetOrders...
-    │   ├── Payment/Commands/           ProcessPayment
+    │   ├── Ordering/Commands|Queries/  CreateOrder (price validation), GetOrders...
+    │   ├── Payment/Commands/           ProcessPayment (idempotent)
     │   └── Identity/Commands|Queries/  Register, Login, RefreshToken...
     │
     ├── 🟡 ECommerce.Persistence/      ← EF Core + PostgreSQL
     │   ├── Context/                    ApplicationDbContext
     │   ├── Configurations/             Fluent API (6 entity configs)
     │   ├── Interceptors/               AuditAndSoftDeleteInterceptor
-    │   └── Repositories/               Generic Repository<T>
+    │   └── Repositories/               Aggregate Repositories (6)
     │
     ├── 🟠 ECommerce.Infrastructure/   ← External concerns
     │   ├── Identity/                   JwtService
@@ -147,6 +146,11 @@ ECommerce/
         ├── Controllers/Admin/          AdminController (role-gated)
         ├── Middlewares/                ExceptionHandlingMiddleware
         └── Extensions/                 DI registrations
+
+tests/
+├── 🧪 ECommerce.UnitTests/            ← Domain & Application unit tests
+├── 📐 ECommerce.ArchitectureTests/    ← Clean Architecture rule validation
+└── 🔗 ECommerce.IntegrationTests/     ← (Placeholder) Integration tests
 ```
 
 ### Dependency Flow
@@ -154,12 +158,12 @@ ECommerce/
 ```
 Domain         ← (independent — ZERO references)
 Application    ← Domain
-Persistence    ← Domain, Application
+Persistence    ← Domain (only)
 Infrastructure ← Domain, Application
 API            ← Application, Persistence, Infrastructure
 ```
 
-> ⚠️ **API never references Domain directly.** Everything flows through Application interfaces.
+> ⚠️ **Persistence depends only on Domain** — not on Application. Repository interfaces live in Domain, implementations in Persistence.
 
 ---
 
@@ -195,7 +199,10 @@ dotnet ef database update \
 # 4. Run the application
 dotnet run --project src/ECommerce.API
 
-# 5. Open Swagger UI
+# 5. Run tests
+dotnet test ECommerce.sln
+
+# 6. Open Swagger UI
 # https://localhost:5001/swagger
 ```
 
@@ -261,6 +268,7 @@ This project follows **enterprise security standards** with defense-in-depth:
 | 🔄 Token Rotation | Refresh tokens with **mandatory rotation** |
 | 🚫 No localStorage | Tokens **never** stored in localStorage |
 | 💳 Payment Safety | **Tokenized payments only** — no card data stored |
+| 🔁 Payment Idempotency | Unique `(OrderId, IdempotencyKey)` prevents duplicate charges |
 | 🛡️ Rate Limiting | IP-based, 100 req/min per client |
 | 🌐 CORS | Strict **whitelist** policy |
 | 🔑 Password Hashing | PBKDF2 with SHA-256 (100K iterations) |
@@ -279,7 +287,7 @@ This project follows **enterprise security standards** with defense-in-depth:
 <td align="center"><b>CQRS</b></td>
 <td align="center"><b>Validation</b></td>
 <td align="center"><b>Logging</b></td>
-<td align="center"><b>Docs</b></td>
+<td align="center"><b>Testing</b></td>
 </tr>
 <tr>
 <td align="center">.NET 10</td>
@@ -288,7 +296,7 @@ This project follows **enterprise security standards** with defense-in-depth:
 <td align="center">MediatR</td>
 <td align="center">FluentValidation</td>
 <td align="center">Serilog</td>
-<td align="center">Swagger</td>
+<td align="center">xUnit, NSubstitute</td>
 </tr>
 </table>
 
@@ -305,6 +313,11 @@ This project follows **enterprise security standards** with defense-in-depth:
 - [x] Admin panel endpoints
 - [x] Global exception handling
 - [x] Rate limiting & CORS
+- [x] Aggregate-specific repositories (replaced generic IRepository)
+- [x] Basket price snapshot (UnitPriceSnapshot + checkout validation)
+- [x] Payment idempotency (IdempotencyKey + unique index)
+- [x] Domain purity verified (zero infrastructure references)
+- [x] Structured logging (Serilog + pipeline behavior)
 - [ ] Email confirmation flow
 - [ ] Pagination & filtering
 - [ ] Redis caching layer
@@ -312,7 +325,8 @@ This project follows **enterprise security standards** with defense-in-depth:
 - [ ] React frontend (SPA)
 - [ ] Docker Compose for full stack
 - [ ] CI/CD pipeline (GitHub Actions)
-- [ ] Unit & integration tests
+- [x] Unit tests & Validation Layer
+- [x] Architecture tests (Clean Architecture Dependencies)
 
 ---
 

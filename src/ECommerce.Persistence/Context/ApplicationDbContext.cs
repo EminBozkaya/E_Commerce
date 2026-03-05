@@ -1,4 +1,3 @@
-using ECommerce.Application.Common.Interfaces;
 using ECommerce.Domain.Basket.Entities;
 using ECommerce.Domain.Catalog.Entities;
 using ECommerce.Domain.Identity.Entities;
@@ -8,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ECommerce.Persistence.Context;
 
-public class ApplicationDbContext : DbContext, IApplicationDbContext
+public class ApplicationDbContext : DbContext
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 

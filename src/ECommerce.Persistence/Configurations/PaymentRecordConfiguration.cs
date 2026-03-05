@@ -13,6 +13,7 @@ public class PaymentRecordConfiguration : IEntityTypeConfiguration<PaymentRecord
         builder.Property(p => p.Provider).IsRequired().HasMaxLength(50);
         builder.Property(p => p.ProviderTransactionId).HasMaxLength(200);
         builder.Property(p => p.FailureReason).HasMaxLength(500);
+        builder.Property(p => p.IdempotencyKey).IsRequired().HasMaxLength(100);
 
         builder.OwnsOne(p => p.Amount, money =>
         {
@@ -21,5 +22,6 @@ public class PaymentRecordConfiguration : IEntityTypeConfiguration<PaymentRecord
         });
 
         builder.HasIndex(p => p.OrderId);
+        builder.HasIndex(p => new { p.OrderId, p.IdempotencyKey }).IsUnique();
     }
 }

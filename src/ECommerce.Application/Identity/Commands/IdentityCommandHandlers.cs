@@ -1,24 +1,24 @@
 using ECommerce.Application.Common.Interfaces;
+using ECommerce.Domain.Identity;
 using ECommerce.Domain.Identity.Entities;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
 
 namespace ECommerce.Application.Identity.Commands;
 
 public class RegisterHandler : IRequestHandler<RegisterCommand, Guid>
 {
-    private readonly IApplicationDbContext _db;
-    public RegisterHandler(IApplicationDbContext db) => _db = db;
+    private readonly IUserRepository _users;
+    public RegisterHandler(IUserRepository users) => _users = users;
 
     public async Task<Guid> Handle(RegisterCommand cmd, CancellationToken ct)
     {
-        var exists = await _db.Users.AnyAsync(u => u.Email == cmd.Email.ToLowerInvariant(), ct);
+        var exists = await _users.ExistsByEmailAsync(cmd.Email, ct);
         if (exists) throw new InvalidOperationException("Email already registered.");
         var hash = HashPassword(cmd.Password);
         var user = AppUser.Create(cmd.FirstName, cmd.LastName, cmd.Email, hash);
-        await _db.Users.AddAsync(user, ct);
-        await _db.SaveChangesAsync(ct);
+        await _users.AddAsync(user, ct);
+        await _users.SaveChangesAsync(ct);
         return user.Id;
     }
 
@@ -32,13 +32,13 @@ public class RegisterHandler : IRequestHandler<RegisterCommand, Guid>
 
 public class LoginHandler : IRequestHandler<LoginCommand, LoginResult>
 {
-    private readonly IApplicationDbContext _db;
+    private readonly IUserRepository _users;
     private readonly IJwtService _jwt;
-    public LoginHandler(IApplicationDbContext db, IJwtService jwt) { _db = db; _jwt = jwt; }
+    public LoginHandler(IUserRepository users, IJwtService jwt) { _users = users; _jwt = jwt; }
 
     public async Task<LoginResult> Handle(LoginCommand cmd, CancellationToken ct)
     {
-        var user = await _db.Users.FirstOrDefaultAsync(u => u.Email == cmd.Email.ToLowerInvariant(), ct)
+        var user = await _users.GetByEmailAsync(cmd.Email, ct)
             ?? throw new UnauthorizedAccessException("Invalid credentials.");
         if (!VerifyPassword(cmd.Password, user.PasswordHash))
             throw new UnauthorizedAccessException("Invalid credentials.");
@@ -46,7 +46,7 @@ public class LoginHandler : IRequestHandler<LoginCommand, LoginResult>
         var refreshToken = _jwt.GenerateRefreshToken();
         var refreshExpiry = DateTime.UtcNow.AddDays(7);
         user.SetRefreshToken(refreshToken, refreshExpiry);
-        await _db.SaveChangesAsync(ct);
+        await _users.SaveChangesAsync(ct);
         return new LoginResult(accessToken, refreshToken, refreshExpiry, user.FullName, user.Role.ToString());
     }
 
@@ -63,13 +63,13 @@ public class LoginHandler : IRequestHandler<LoginCommand, LoginResult>
 
 public class RefreshTokenHandler : IRequestHandler<RefreshTokenCommand, LoginResult>
 {
-    private readonly IApplicationDbContext _db;
+    private readonly IUserRepository _users;
     private readonly IJwtService _jwt;
-    public RefreshTokenHandler(IApplicationDbContext db, IJwtService jwt) { _db = db; _jwt = jwt; }
+    public RefreshTokenHandler(IUserRepository users, IJwtService jwt) { _users = users; _jwt = jwt; }
 
     public async Task<LoginResult> Handle(RefreshTokenCommand cmd, CancellationToken ct)
     {
-        var user = await _db.Users.FirstOrDefaultAsync(u => u.RefreshToken == cmd.RefreshToken, ct)
+        var user = await _users.GetByRefreshTokenAsync(cmd.RefreshToken, ct)
             ?? throw new UnauthorizedAccessException("Invalid refresh token.");
         if (!user.IsRefreshTokenValid(cmd.RefreshToken))
             throw new UnauthorizedAccessException("Refresh token expired.");
@@ -77,7 +77,7 @@ public class RefreshTokenHandler : IRequestHandler<RefreshTokenCommand, LoginRes
         var newRefreshToken = _jwt.GenerateRefreshToken();
         var newExpiry = DateTime.UtcNow.AddDays(7);
         user.SetRefreshToken(newRefreshToken, newExpiry);
-        await _db.SaveChangesAsync(ct);
+        await _users.SaveChangesAsync(ct);
         return new LoginResult(newAccessToken, newRefreshToken, newExpiry, user.FullName, user.Role.ToString());
     }
 }

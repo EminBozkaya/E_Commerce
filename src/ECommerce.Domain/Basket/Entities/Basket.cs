@@ -12,9 +12,9 @@ public class Basket : BaseEntity
     private readonly List<BasketItem> _items = [];
     public IReadOnlyCollection<BasketItem> Items => _items.AsReadOnly();
 
-    public Money Total => _items.Aggregate(
-        new Money(0),
-        (acc, item) => acc.Add(item.TotalPrice));
+    public Money Total => _items.Count == 0 
+        ? new Money(0, "TRY") 
+        : _items.Skip(1).Aggregate(_items[0].LineTotalSnapshot, (acc, item) => acc.Add(item.LineTotalSnapshot));
 
     private Basket() { }
 

@@ -9,3 +9,4 @@ C:\Users\MSI\source\repos\E_Commerce\src\ECommerce.Domain\obj\Debug\net10.0\ECom
 C:\Users\MSI\source\repos\E_Commerce\src\ECommerce.Domain\obj\Debug\net10.0\refint\ECommerce.Domain.dll
 C:\Users\MSI\source\repos\E_Commerce\src\ECommerce.Domain\obj\Debug\net10.0\ECommerce.Domain.pdb
 C:\Users\MSI\source\repos\E_Commerce\src\ECommerce.Domain\obj\Debug\net10.0\ref\ECommerce.Domain.dll
+C:\Users\MSI\source\repos\E_Commerce\src\ECommerce.Domain\obj\Debug\net10.0\ECommerce.Domain.sourcelink.json

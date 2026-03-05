@@ -1,9 +1,14 @@
-using ECommerce.Application.Common.Interfaces;
+using ECommerce.Domain.Basket;
+using ECommerce.Domain.Catalog;
+using ECommerce.Domain.Identity;
+using ECommerce.Domain.Ordering;
+using ECommerce.Domain.Payment;
 using ECommerce.Persistence.Context;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Configuration;
 using ECommerce.Persistence.Interceptors;
+using ECommerce.Persistence.Repositories;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace ECommerce.Persistence;
 
@@ -25,7 +30,13 @@ public static class DependencyInjection
             .AddInterceptors(interceptor);
         });
 
-        services.AddScoped<IApplicationDbContext>(sp => sp.GetRequiredService<ApplicationDbContext>());
+        // Aggregate repositories
+        services.AddScoped<IProductRepository, ProductRepository>();
+        services.AddScoped<ICategoryRepository, CategoryRepository>();
+        services.AddScoped<IOrderRepository, OrderRepository>();
+        services.AddScoped<IBasketRepository, BasketRepository>();
+        services.AddScoped<IPaymentRepository, PaymentRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
 
         return services;
     }

@@ -16,9 +16,9 @@ public class Order : BaseAuditableEntity
     private readonly List<OrderItem> _items = [];
     public IReadOnlyCollection<OrderItem> Items => _items.AsReadOnly();
 
-    public Money Total => _items.Aggregate(
-        new Money(0),
-        (acc, item) => acc.Add(item.LineTotal));
+    public Money Total => _items.Count == 0 
+        ? new Money(0, "TRY") 
+        : _items.Skip(1).Aggregate(_items[0].LineTotal, (acc, item) => acc.Add(item.LineTotal));
 
     private Order() { }
 

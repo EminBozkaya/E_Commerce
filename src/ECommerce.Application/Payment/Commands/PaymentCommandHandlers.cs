@@ -1,25 +1,36 @@
 using ECommerce.Application.Common.Interfaces;
+using ECommerce.Domain.Ordering;
+using ECommerce.Domain.Payment;
 using ECommerce.Domain.Payment.Entities;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace ECommerce.Application.Payment.Commands;
 
 public class ProcessPaymentHandler : IRequestHandler<ProcessPaymentCommand, Guid>
 {
-    private readonly IApplicationDbContext _db;
+    private readonly IOrderRepository _orders;
+    private readonly IPaymentRepository _payments;
     private readonly IPaymentService _paymentService;
-    public ProcessPaymentHandler(IApplicationDbContext db, IPaymentService paymentService)
-    { _db = db; _paymentService = paymentService; }
+
+    public ProcessPaymentHandler(IOrderRepository orders, IPaymentRepository payments, IPaymentService paymentService)
+    {
+        _orders = orders;
+        _payments = payments;
+        _paymentService = paymentService;
+    }
 
     public async Task<Guid> Handle(ProcessPaymentCommand cmd, CancellationToken ct)
     {
-        var order = await _db.Orders.Include(o => o.Items)
-            .FirstOrDefaultAsync(o => o.Id == cmd.OrderId, ct)
+        // Idempotency check — return existing result if already processed
+        var existing = await _payments.GetByIdempotencyKeyAsync(cmd.OrderId, cmd.IdempotencyKey, ct);
+        if (existing is not null)
+            return existing.Id;
+
+        var order = await _orders.GetByIdWithItemsAsync(cmd.OrderId, ct)
             ?? throw new KeyNotFoundException("Order not found.");
 
-        var payment = PaymentRecord.CreatePending(order.Id, order.Total, "CreditCard");
-        await _db.PaymentRecords.AddAsync(payment, ct);
+        var payment = PaymentRecord.CreatePending(order.Id, order.Total, "CreditCard", cmd.IdempotencyKey);
+        await _payments.AddAsync(payment, ct);
 
         try
         {
@@ -33,7 +44,7 @@ public class ProcessPaymentHandler : IRequestHandler<ProcessPaymentCommand, Guid
             throw;
         }
 
-        await _db.SaveChangesAsync(ct);
+        await _payments.SaveChangesAsync(ct);
         return payment.Id;
     }
 }

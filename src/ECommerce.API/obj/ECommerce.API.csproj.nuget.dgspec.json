@@ -567,10 +567,6 @@
             "MediatR": {
               "target": "Package",
               "version": "[14.1.0, )"
-            },
-            "Microsoft.EntityFrameworkCore": {
-              "target": "Package",
-              "version": "[*, )"
             }
           },
           "imports": [
@@ -1600,9 +1596,6 @@
           "net10.0": {
             "targetAlias": "net10.0",
             "projectReferences": {
-              "C:\\Users\\MSI\\source\\repos\\E_Commerce\\src\\ECommerce.Application\\ECommerce.Application.csproj": {
-                "projectPath": "C:\\Users\\MSI\\source\\repos\\E_Commerce\\src\\ECommerce.Application\\ECommerce.Application.csproj"
-              },
               "C:\\Users\\MSI\\source\\repos\\E_Commerce\\src\\ECommerce.Domain\\ECommerce.Domain.csproj": {
                 "projectPath": "C:\\Users\\MSI\\source\\repos\\E_Commerce\\src\\ECommerce.Domain\\ECommerce.Domain.csproj"
               }

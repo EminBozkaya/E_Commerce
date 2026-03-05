@@ -1,10 +1,9 @@
 <p align="center">
   <img src="https://img.shields.io/badge/.NET-10.0-512BD4?style=for-the-badge&logo=dotnet&logoColor=white" />
-  <img src="https://img.shields.io/badge/C%23-13-239120?style=for-the-badge&logo=csharp&logoColor=white" />
+  <img src="https://img.shields.io/badge/C%23-14-239120?style=for-the-badge&logo=csharp&logoColor=white" />
   <img src="https://img.shields.io/badge/PostgreSQL-16-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" />
   <img src="https://img.shields.io/badge/EF%20Core-10.0-512BD4?style=for-the-badge&logo=dotnet&logoColor=white" />
-  <img src="https://img.shields.io/badge/DDD | Architecture-Clean%20%2B%20CQRS-blueviolet?style=for-the-badge" />
-  
+  <img src="https://img.shields.io/badge/Architecture-Clean%20%2B%20CQRS-blueviolet?style=for-the-badge" />
 </p>
 
 <h1 align="center">🛒 ECommerce Platform</h1>
@@ -178,7 +177,7 @@ API            ← Application, Persistence, Infrastructure
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/YOUR_USERNAME/E_Commerce.git
+git clone https://github.com/EminBozkaya/E_Commerce.git
 cd E_Commerce
 
 # 2. Update the connection string in appsettings
@@ -205,8 +204,8 @@ dotnet run --project src/ECommerce.API
 ```bash
 docker run -d \
   --name ecommerce-db \
-  -e POSTGRES_USER=postgres \
-  -e POSTGRES_PASSWORD=postgres \
+  -e POSTGRES_USER=postgresUser \
+  -e POSTGRES_PASSWORD=postgresPassword \
   -e POSTGRES_DB=ECommerceDb \
   -p 5432:5432 \
   postgres:16-alpine
@@ -314,12 +313,6 @@ This project follows **enterprise security standards** with defense-in-depth:
 - [ ] Docker Compose for full stack
 - [ ] CI/CD pipeline (GitHub Actions)
 - [ ] Unit & integration tests
-
----
-
-## 📄 License
-
-This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
 
 ---
 

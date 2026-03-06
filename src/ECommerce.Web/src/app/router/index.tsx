@@ -1,5 +1,6 @@
 import { createBrowserRouter } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
+import { ProtectedRoute } from './ProtectedRoute';
 import { MainLayout } from '../../components/layouts/MainLayout';
 import { AdminLayout } from '../../components/layouts/AdminLayout';
 import { LoadingSpinner } from '../../components/shared/LoadingSpinner';
@@ -10,6 +11,7 @@ const ProductListPage = lazy(() => import('../../features/catalog/pages/ProductL
 const ProductDetailPage = lazy(() => import('../../features/catalog/pages/ProductDetailPage'));
 const BasketPage = lazy(() => import('../../features/basket/pages/BasketPage'));
 const LoginPage = lazy(() => import('../../features/auth/pages/LoginPage'));
+const RegisterPage = lazy(() => import('../../features/auth/pages/RegisterPage'));
 const AdminDashboardPage = lazy(() => import('../../features/admin/pages/AdminDashboardPage'));
 const AdminProductsPage = lazy(() => import('../../features/admin/products/pages/AdminProductsPage'));
 const AdminOrdersPage = lazy(() => import('../../features/admin/orders/pages/AdminOrdersPage'));
@@ -71,36 +73,50 @@ export const router = createBrowserRouter([
                     </SuspenseWrapper>
                 ),
             },
+            {
+                path: 'register',
+                element: (
+                    <SuspenseWrapper>
+                        <RegisterPage />
+                    </SuspenseWrapper>
+                ),
+            },
         ],
     },
     {
         path: '/admin',
-        element: <AdminLayout />,
+        element: <ProtectedRoute allowedRoles={['Admin']} />,
         children: [
             {
-                index: true,
-                element: (
-                    <SuspenseWrapper>
-                        <AdminDashboardPage />
-                    </SuspenseWrapper>
-                ),
-            },
-            {
-                path: 'products',
-                element: (
-                    <SuspenseWrapper>
-                        <AdminProductsPage />
-                    </SuspenseWrapper>
-                ),
-            },
-            {
-                path: 'orders',
-                element: (
-                    <SuspenseWrapper>
-                        <AdminOrdersPage />
-                    </SuspenseWrapper>
-                ),
+                element: <AdminLayout />,
+                children: [
+                    {
+                        index: true,
+                        element: (
+                            <SuspenseWrapper>
+                                <AdminDashboardPage />
+                            </SuspenseWrapper>
+                        ),
+                    },
+                    {
+                        path: 'products',
+                        element: (
+                            <SuspenseWrapper>
+                                <AdminProductsPage />
+                            </SuspenseWrapper>
+                        ),
+                    },
+                    {
+                        path: 'orders',
+                        element: (
+                            <SuspenseWrapper>
+                                <AdminOrdersPage />
+                            </SuspenseWrapper>
+                        ),
+                    },
+                ],
             },
         ],
     },
 ]);
+

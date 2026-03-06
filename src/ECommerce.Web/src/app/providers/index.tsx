@@ -12,10 +12,25 @@ const queryClient = new QueryClient({
     },
 });
 
+import { useInitAuth } from '@/features/auth/hooks/useInitAuth';
+import { useAuthStore } from '@/store/authStore';
+import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
+
+function AuthInitializer({ children }: { children: React.ReactNode }) {
+    useInitAuth();
+    const isAuthLoading = useAuthStore((s) => s.isAuthLoading);
+
+    if (isAuthLoading) return <LoadingSpinner size="lg" className="h-screen w-full flex items-center justify-center" />;
+    return <>{children}</>;
+}
+
 export function AppProviders() {
     return (
         <QueryClientProvider client={queryClient}>
-            <RouterProvider router={router} />
+            <AuthInitializer>
+                <RouterProvider router={router} />
+            </AuthInitializer>
         </QueryClientProvider>
     );
 }
+

@@ -16,6 +16,8 @@ public record LoginResult(
     string AccessToken,
     string RefreshToken,
     DateTime RefreshTokenExpiry,
+    Guid UserId,
+    string Email,
     string FullName,
     string Role);
 

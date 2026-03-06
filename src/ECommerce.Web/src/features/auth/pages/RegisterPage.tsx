@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import { useRegister } from '@/features/auth/hooks/useRegister';
 
 export default function RegisterPage() {
-    const [fullName, setFullName] = useState('');
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -20,7 +21,7 @@ export default function RegisterPage() {
             return;
         }
 
-        register({ fullName, email, password, confirmPassword });
+        register({ firstName, lastName, email, password, confirmPassword });
     };
 
     return (
@@ -39,32 +40,53 @@ export default function RegisterPage() {
                 </div>
 
                 <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-                    {(clientError || error?.response?.data?.detail) && (
+                    {(clientError || error?.message) && (
                         <div className="rounded-md bg-red-50 p-4">
                             <div className="text-sm text-red-700">
-                                {clientError || error?.response?.data?.detail}
+                                {clientError || error?.message}
                             </div>
                         </div>
                     )}
 
                     <div className="space-y-4">
                         <div>
-                            <label htmlFor="fullName" className="block text-sm font-medium leading-6 text-gray-900">
-                                Full Name
+                            <label htmlFor="firstName" className="block text-sm font-medium leading-6 text-gray-900">
+                                First Name
                             </label>
                             <div className="mt-2">
                                 <input
-                                    id="fullName"
-                                    name="fullName"
+                                    id="firstName"
+                                    name="firstName"
                                     type="text"
-                                    autoComplete="name"
+                                    autoComplete="given-name"
                                     required
-                                    value={fullName}
-                                    onChange={(e) => setFullName(e.target.value)}
+                                    value={firstName}
+                                    onChange={(e) => setFirstName(e.target.value)}
                                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6 px-3"
                                 />
-                                {error?.response?.data?.errors?.FullName && (
-                                    <p className="mt-2 text-sm text-red-600">{error.response.data.errors.FullName[0]}</p>
+                                {error?.errors?.FirstName && (
+                                    <p className="mt-2 text-sm text-red-600">{error.errors.FirstName[0]}</p>
+                                )}
+                            </div>
+                        </div>
+
+                        <div>
+                            <label htmlFor="lastName" className="block text-sm font-medium leading-6 text-gray-900">
+                                Last Name
+                            </label>
+                            <div className="mt-2">
+                                <input
+                                    id="lastName"
+                                    name="lastName"
+                                    type="text"
+                                    autoComplete="family-name"
+                                    required
+                                    value={lastName}
+                                    onChange={(e) => setLastName(e.target.value)}
+                                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6 px-3"
+                                />
+                                {error?.errors?.LastName && (
+                                    <p className="mt-2 text-sm text-red-600">{error.errors.LastName[0]}</p>
                                 )}
                             </div>
                         </div>
@@ -84,8 +106,8 @@ export default function RegisterPage() {
                                     onChange={(e) => setEmail(e.target.value)}
                                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6 px-3"
                                 />
-                                {error?.response?.data?.errors?.Email && (
-                                    <p className="mt-2 text-sm text-red-600">{error.response.data.errors.Email[0]}</p>
+                                {error?.errors?.Email && (
+                                    <p className="mt-2 text-sm text-red-600">{error.errors.Email[0]}</p>
                                 )}
                             </div>
                         </div>
@@ -105,8 +127,8 @@ export default function RegisterPage() {
                                     onChange={(e) => setPassword(e.target.value)}
                                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6 px-3"
                                 />
-                                {error?.response?.data?.errors?.Password && (
-                                    <p className="mt-2 text-sm text-red-600">{error.response.data.errors.Password[0]}</p>
+                                {error?.errors?.Password && (
+                                    <p className="mt-2 text-sm text-red-600">{error.errors.Password[0]}</p>
                                 )}
                             </div>
                         </div>
@@ -126,8 +148,8 @@ export default function RegisterPage() {
                                     onChange={(e) => setConfirmPassword(e.target.value)}
                                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6 px-3"
                                 />
-                                {error?.response?.data?.errors?.ConfirmPassword && (
-                                    <p className="mt-2 text-sm text-red-600">{error.response.data.errors.ConfirmPassword[0]}</p>
+                                {error?.errors?.ConfirmPassword && (
+                                    <p className="mt-2 text-sm text-red-600">{error.errors.ConfirmPassword[0]}</p>
                                 )}
                             </div>
                         </div>

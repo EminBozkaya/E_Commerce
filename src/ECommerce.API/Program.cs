@@ -4,6 +4,7 @@ using ECommerce.Persistence;
 using ECommerce.API.Middlewares;
 using ECommerce.API.Extensions;
 using Serilog;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,6 +47,13 @@ builder.Services.AddRateLimiter(options =>
 });
 
 var app = builder.Build();
+
+// ── Automatic Database Migration ──
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<ECommerce.Persistence.Context.ApplicationDbContext>();
+    await context.Database.MigrateAsync();
+}
 
 // ── Middleware pipeline ──
 if (app.Environment.IsDevelopment())

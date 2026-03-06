@@ -7,6 +7,7 @@ namespace ECommerce.Domain.Identity;
 /// </summary>
 public interface IUserRepository
 {
+    Task<AppUser?> GetByIdAsync(Guid id, CancellationToken ct = default);
     Task<AppUser?> GetByEmailAsync(string email, CancellationToken ct = default);
     Task<AppUser?> GetByRefreshTokenAsync(string refreshToken, CancellationToken ct = default);
     Task<bool> ExistsByEmailAsync(string email, CancellationToken ct = default);

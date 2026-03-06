@@ -9,7 +9,11 @@ apiClient.interceptors.response.use(
     (response) => response,
     (error) => {
         if (error.response?.status === 401) {
-            window.location.href = '/login';
+            // Do not redirect if the request was to /login or /me, otherwise it causes infinite loops
+            const url = error.config?.url;
+            if (url && !url.includes('/api/auth/login') && !url.includes('/api/auth/me')) {
+                window.location.href = '/login';
+            }
         } else if (error.response?.status === 500) {
             if (import.meta.env.DEV) {
                 console.error('API Error 500:', error.response.data);

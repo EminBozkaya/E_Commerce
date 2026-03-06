@@ -49,7 +49,7 @@ export async function mockRegister(req: RegisterRequest): Promise<AuthResponse> 
         id: String(mockUsers.length + 1),
         email: req.email,
         password: req.password,
-        fullName: req.fullName,
+        fullName: `${req.firstName} ${req.lastName}`,
         role: 'Customer'
     };
 

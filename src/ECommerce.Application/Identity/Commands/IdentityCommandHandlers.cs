@@ -47,7 +47,7 @@ public class LoginHandler : IRequestHandler<LoginCommand, LoginResult>
         var refreshExpiry = DateTime.UtcNow.AddDays(7);
         user.SetRefreshToken(refreshToken, refreshExpiry);
         await _users.SaveChangesAsync(ct);
-        return new LoginResult(accessToken, refreshToken, refreshExpiry, user.FullName, user.Role.ToString());
+        return new LoginResult(accessToken, refreshToken, refreshExpiry, user.Id, user.Email, user.FullName, user.Role.ToString());
     }
 
     private static bool VerifyPassword(string password, string storedHash)
@@ -78,6 +78,6 @@ public class RefreshTokenHandler : IRequestHandler<RefreshTokenCommand, LoginRes
         var newExpiry = DateTime.UtcNow.AddDays(7);
         user.SetRefreshToken(newRefreshToken, newExpiry);
         await _users.SaveChangesAsync(ct);
-        return new LoginResult(newAccessToken, newRefreshToken, newExpiry, user.FullName, user.Role.ToString());
+        return new LoginResult(newAccessToken, newRefreshToken, newExpiry, user.Id, user.Email, user.FullName, user.Role.ToString());
     }
 }

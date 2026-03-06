@@ -5,6 +5,7 @@ import { LoadingSpinner } from '../../../components/shared/LoadingSpinner';
 import { ErrorMessage } from '../../../components/shared/ErrorMessage';
 import { EmptyState } from '../../../components/shared/EmptyState';
 import { ArrowLeft } from 'lucide-react';
+import { AddToBasketButton } from '../../basket/components/AddToBasketButton';
 
 export default function ProductDetailPage() {
     const { id } = useParams<{ id: string }>();
@@ -133,16 +134,7 @@ export default function ProductDetailPage() {
                         </div>
 
                         <div className="pt-6 border-t border-gray-100 mt-auto">
-                            <button
-                                disabled={!inStock}
-                                className={`w-full py-4 px-8 rounded-xl font-bold text-lg transition-all duration-200 flex items-center justify-center space-x-2 ${inStock
-                                        ? 'bg-blue-600 text-white hover:bg-blue-700 hover:shadow-lg active:transform active:scale-95'
-                                        : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                                    }`}
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-shopping-cart"><circle cx="8" cy="21" r="1" /><circle cx="19" cy="21" r="1" /><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" /></svg>
-                                <span>{inStock ? 'Add to Cart' : 'Currently Unavailable'}</span>
-                            </button>
+                            <AddToBasketButton productId={product.id} disabled={!inStock} />
                             <p className="text-xs text-center text-gray-400 mt-4">
                                 Free shipping on orders over $50
                             </p>

@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { getProducts } from '../api/catalogApi';
-import { ProductListParams } from '../types/product';
+import type { ProductListParams } from '../types/product';
 import { queryKeys } from '../../../utils/queryKeys';
 
 export function useProducts(params: ProductListParams) {

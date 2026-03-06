@@ -1,6 +1,6 @@
 import { apiClient } from '../../../api/client';
-import { Category, Product, ProductListParams } from '../types/product';
-import { PaginatedResult } from '../../../types/api';
+import type { Category, Product, ProductListParams } from '../types/product';
+import type { PaginatedResult } from '../../../types/api';
 import { mockCategories, mockProducts, mockPaginate } from './mock';
 
 const isMock = import.meta.env.VITE_USE_MOCK_API === 'true';

@@ -1,4 +1,4 @@
-import { AuthResponse, AuthUser, LoginRequest, RegisterRequest } from '../types/auth';
+import type { AuthResponse, AuthUser, LoginRequest, RegisterRequest } from '../types/auth';
 
 // Simulated user store for mock mode
 const mockUsers: (AuthUser & { password: string })[] = [

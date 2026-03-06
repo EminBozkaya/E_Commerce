@@ -1,5 +1,5 @@
-import { apiClient } from '@/app/api/client';
-import { AuthResponse, AuthUser, LoginRequest, RegisterRequest } from '../types/auth';
+import { apiClient } from '../../../api/client';
+import type { AuthResponse, AuthUser, LoginRequest, RegisterRequest } from '../types/auth';
 import { mockGetMe, mockLogin, mockLogout, mockRegister } from './mock';
 
 const USE_MOCK = import.meta.env.VITE_USE_MOCK_API === 'true';

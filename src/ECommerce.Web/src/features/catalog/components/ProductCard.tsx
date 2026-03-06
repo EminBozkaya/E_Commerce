@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
-import { Product } from '../types/product';
+import type { Product } from '../types/product';
 import { formatPrice } from '../../../utils/formatters';
+import { AddToBasketButton } from '../../basket/components/AddToBasketButton';
 
 interface ProductCardProps {
     product: Product;
@@ -47,6 +48,9 @@ export function ProductCard({ product }: ProductCardProps) {
                     <p className="text-lg font-bold text-gray-900">
                         {formatPrice(product.price, product.currency)}
                     </p>
+                </div>
+                <div className="mt-4">
+                    <AddToBasketButton productId={product.id} disabled={!inStock} />
                 </div>
             </div>
         </div>

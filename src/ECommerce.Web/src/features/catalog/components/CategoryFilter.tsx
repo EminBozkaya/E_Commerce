@@ -23,8 +23,7 @@ export function CategoryFilter({ selectedCategoryId, onSelect }: CategoryFilterP
         return (
             <div className="mb-6">
                 <ErrorMessage
-                    title="Failed to load categories"
-                    error={error}
+                    message="Failed to load categories"
                     onRetry={() => refetch()}
                 />
             </div>
@@ -38,8 +37,8 @@ export function CategoryFilter({ selectedCategoryId, onSelect }: CategoryFilterP
                 aria-selected={selectedCategoryId === undefined}
                 onClick={() => onSelect(undefined)}
                 className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${selectedCategoryId === undefined
-                        ? 'bg-blue-600 text-white shadow-sm'
-                        : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                    ? 'bg-blue-600 text-white shadow-sm'
+                    : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
                     }`}
             >
                 All
@@ -51,8 +50,8 @@ export function CategoryFilter({ selectedCategoryId, onSelect }: CategoryFilterP
                     aria-selected={selectedCategoryId === category.id}
                     onClick={() => onSelect(category.id)}
                     className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${selectedCategoryId === category.id
-                            ? 'bg-blue-600 text-white shadow-sm'
-                            : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                        ? 'bg-blue-600 text-white shadow-sm'
+                        : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
                         }`}
                 >
                     {category.name}

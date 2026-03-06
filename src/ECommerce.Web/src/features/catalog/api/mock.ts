@@ -1,5 +1,5 @@
-import { Category, Product } from '../types/product';
-import { PaginatedResult } from '../../../types/api';
+import type { Category, Product } from '../types/product';
+import type { PaginatedResult } from '../../../types/api';
 
 export const mockCategories: Category[] = [
     { id: '1', name: 'Nuts & Dried Fruits', slug: 'nuts-dried-fruits' },

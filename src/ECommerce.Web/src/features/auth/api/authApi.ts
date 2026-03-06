@@ -6,19 +6,19 @@ const USE_MOCK = import.meta.env.VITE_USE_MOCK_API === 'true';
 
 export async function login(req: LoginRequest): Promise<AuthResponse> {
     if (USE_MOCK) return mockLogin(req);
-    const response = await apiClient.post<AuthResponse>('/auth/login', req);
+    const response = await apiClient.post<AuthResponse>('/api/auth/login', req);
     return response.data;
 }
 
 export async function register(req: RegisterRequest): Promise<AuthResponse> {
     if (USE_MOCK) return mockRegister(req);
-    const response = await apiClient.post<AuthResponse>('/auth/register', req);
+    const response = await apiClient.post<AuthResponse>('/api/auth/register', req);
     return response.data;
 }
 
 export async function logout(): Promise<void> {
     if (USE_MOCK) return mockLogout();
-    await apiClient.post('/auth/logout');
+    await apiClient.post('/api/auth/logout');
 }
 
 /**
@@ -28,6 +28,6 @@ export async function logout(): Promise<void> {
  */
 export async function getMe(): Promise<AuthUser> {
     if (USE_MOCK) return mockGetMe();
-    const response = await apiClient.get<AuthUser>('/auth/me');
+    const response = await apiClient.get<AuthUser>('/api/auth/me');
     return response.data;
 }

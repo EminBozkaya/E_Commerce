@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "joTOUT4wev0=",
+  "dgSpecHash": "Gd/nz+rMjBI=",
   "success": true,
   "projectFilePath": "C:\\Users\\MSI\\source\\repos\\E_Commerce\\src\\ECommerce.Infrastructure\\ECommerce.Infrastructure.csproj",
   "expectedPackageFiles": [
@@ -40,7 +40,8 @@
     "C:\\Users\\MSI\\.nuget\\packages\\serilog.sinks.file\\7.0.0\\serilog.sinks.file.7.0.0.nupkg.sha512",
     "C:\\Users\\MSI\\.nuget\\packages\\stackexchange.redis\\2.11.8\\stackexchange.redis.2.11.8.nupkg.sha512",
     "C:\\Users\\MSI\\.nuget\\packages\\system.identitymodel.tokens.jwt\\8.16.0\\system.identitymodel.tokens.jwt.8.16.0.nupkg.sha512",
-    "C:\\Users\\MSI\\.nuget\\packages\\system.io.hashing\\10.0.2\\system.io.hashing.10.0.2.nupkg.sha512"
+    "C:\\Users\\MSI\\.nuget\\packages\\system.io.hashing\\10.0.2\\system.io.hashing.10.0.2.nupkg.sha512",
+    "C:\\Users\\MSI\\.nuget\\packages\\system.io.pipelines\\5.0.1\\system.io.pipelines.5.0.1.nupkg.sha512"
   ],
   "logs": []
 }

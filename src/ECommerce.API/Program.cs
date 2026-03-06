@@ -2,6 +2,7 @@ using ECommerce.Application;
 using ECommerce.Infrastructure;
 using ECommerce.Persistence;
 using ECommerce.API.Middlewares;
+using ECommerce.API.Extensions;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +17,7 @@ builder.Host.UseSerilog((ctx, cfg) => cfg
 builder.Services.AddApplication();
 builder.Services.AddPersistence(builder.Configuration);
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddCachingInfrastructure(builder.Configuration);
 
 // ── API services ──
 builder.Services.AddControllers();

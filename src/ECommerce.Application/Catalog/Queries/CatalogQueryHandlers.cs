@@ -1,24 +1,30 @@
+using ECommerce.Application.Catalog.Specifications;
+using ECommerce.Application.Common.Models;
 using ECommerce.Domain.Catalog;
 using ECommerce.Domain.Catalog.Entities;
 using MediatR;
 
 namespace ECommerce.Application.Catalog.Queries;
 
-public class GetProductsHandler : IRequestHandler<GetProductsQuery, IReadOnlyList<ProductDto>>
+public class GetProductsHandler : IRequestHandler<GetProductsQuery, PagedResult<ProductDto>>
 {
     private readonly IProductRepository _products;
     public GetProductsHandler(IProductRepository products) => _products = products;
 
-    public async Task<IReadOnlyList<ProductDto>> Handle(GetProductsQuery q, CancellationToken ct)
+    public async Task<PagedResult<ProductDto>> Handle(GetProductsQuery q, CancellationToken ct)
     {
-        var products = q.CategoryId.HasValue
-            ? await _products.GetByCategoryAsync(q.CategoryId.Value, ct)
-            : await _products.GetAllActiveAsync(ct);
+        var spec = new ProductsWithFiltersSpecification(
+            q.SearchTerm, q.MinPrice, q.MaxPrice, q.CategoryId, q.SortBy, q.Descending, q.PageNumber, q.PageSize);
+            
+        var count = await _products.CountAsync(spec, ct);
+        var products = await _products.ListAsync(spec, ct);
 
-        return products.Select(p => new ProductDto(
+        var items = products.Select(p => new ProductDto(
             p.Id, p.Name, p.Description, p.ImageUrl,
             p.Price.Amount, p.Price.Currency, p.Stock.Value, p.IsActive,
             p.CategoryId, p.Category!.Name)).ToList();
+            
+        return new PagedResult<ProductDto>(items, count, q.PageNumber, q.PageSize);
     }
 }
 

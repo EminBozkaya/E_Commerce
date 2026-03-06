@@ -2,6 +2,7 @@
   <img src="https://img.shields.io/badge/.NET-10.0-512BD4?style=for-the-badge&logo=dotnet&logoColor=white" />
   <img src="https://img.shields.io/badge/C%23-14-239120?style=for-the-badge&logo=csharp&logoColor=white" />
   <img src="https://img.shields.io/badge/PostgreSQL-16-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" />
+  <img src="https://img.shields.io/badge/Redis-Cache-DC382D?style=for-the-badge&logo=redis&logoColor=white" />
   <img src="https://img.shields.io/badge/EF%20Core-10.0-512BD4?style=for-the-badge&logo=dotnet&logoColor=white" />
   <img src="https://img.shields.io/badge/Architecture | DDD-Clean%20%2B%20CQRS-blueviolet?style=for-the-badge" />
 </p>
@@ -70,7 +71,7 @@ This project follows **Modular Monolith** architecture with strict **Clean Archi
 │  │  • JWT Service   │  │  • EF Core DbContext        │  │
 │  │  • Payment       │  │  • Fluent API Configs       │  │
 │  │  • Serilog       │  │  • Repositories             │  │
-│  │                  │  │  • Soft-Delete Interceptor   │  │
+│  │  • Redis Cache   │  │  • Soft-Delete Interceptor   │  │
 │  └────────┬─────────┘  └─────────────┬────────────────┘  │
 │           │                          │                   │
 │           ▼                          ▼                   │
@@ -80,6 +81,7 @@ This project follows **Modular Monolith** architecture with strict **Clean Archi
 │  │  • Commands & Queries (CQRS via MediatR)          │   │
 │  │  • Validation Pipeline (FluentValidation)         │   │
 │  │  • Logging Pipeline (Serilog)                     │   │
+│  │  • Caching Pipeline (Redis)                       │   │
 │  │  • NO EF Core dependency                          │   │
 │  └──────────────────────┬────────────────────────────┘   │
 │                         │                                │
@@ -123,7 +125,7 @@ ECommerce/
     │   └── Identity/                   AppUser, UserRole, IUserRepository
     │
     ├── 🟢 ECommerce.Application/      ← CQRS Commands & Queries (NO EF Core)
-    │   ├── Common/                     Behaviors (Logging, Validation)
+    │   ├── Common/                     Behaviors (Logging, Validation, Caching)
     │   ├── Catalog/Commands|Queries/   CreateProduct, GetProducts...
     │   ├── Basket/Commands|Queries/    AddToBasket, GetBasket...
     │   ├── Ordering/Commands|Queries/  CreateOrder (price validation), GetOrders...
@@ -139,6 +141,7 @@ ECommerce/
     ├── 🟠 ECommerce.Infrastructure/   ← External concerns
     │   ├── Identity/                   JwtService
     │   ├── Payment/                    StubPaymentService
+    │   ├── Caching/                    RedisCacheService
     │   └── Logging/                    Serilog configuration
     │
     └── 🔴 ECommerce.API/              ← Orchestrator (no business logic)
@@ -175,6 +178,7 @@ API            ← Application, Persistence, Infrastructure
 |------|---------|
 | [.NET SDK](https://dotnet.microsoft.com/download) | 10.0+ |
 | [PostgreSQL](https://www.postgresql.org/) | 14+ |
+| [Redis](https://redis.io/) | 6+ |
 | [Docker](https://www.docker.com/) | Optional |
 
 ### Quick Start
@@ -206,7 +210,7 @@ dotnet test ECommerce.sln
 # https://localhost:5001/swagger
 ```
 
-### Docker (PostgreSQL)
+### Docker (PostgreSQL & Redis)
 
 ```bash
 docker run -d \
@@ -216,6 +220,11 @@ docker run -d \
   -e POSTGRES_DB=ECommerceDb \
   -p 5432:5432 \
   postgres:16-alpine
+
+docker run -d \
+  --name ecommerce-redis \
+  -p 6379:6379 \
+  redis:7-alpine
 ```
 
 ---
@@ -284,6 +293,7 @@ This project follows **enterprise security standards** with defense-in-depth:
 <td align="center"><b>Runtime</b></td>
 <td align="center"><b>ORM</b></td>
 <td align="center"><b>Database</b></td>
+<td align="center"><b>Caching</b></td>
 <td align="center"><b>CQRS</b></td>
 <td align="center"><b>Validation</b></td>
 <td align="center"><b>Logging</b></td>
@@ -293,6 +303,7 @@ This project follows **enterprise security standards** with defense-in-depth:
 <td align="center">.NET 10</td>
 <td align="center">EF Core 10</td>
 <td align="center">PostgreSQL</td>
+<td align="center">Redis</td>
 <td align="center">MediatR</td>
 <td align="center">FluentValidation</td>
 <td align="center">Serilog</td>
@@ -319,8 +330,8 @@ This project follows **enterprise security standards** with defense-in-depth:
 - [x] Domain purity verified (zero infrastructure references)
 - [x] Structured logging (Serilog + pipeline behavior)
 - [ ] Email confirmation flow
-- [ ] Pagination & filtering
-- [ ] Redis caching layer
+- [x] Pagination & filtering
+- [x] Redis caching layer (MediatR Pipeline)
 - [ ] Real payment provider integration (Iyzico / Stripe)
 - [ ] React frontend (SPA)
 - [ ] Docker Compose for full stack

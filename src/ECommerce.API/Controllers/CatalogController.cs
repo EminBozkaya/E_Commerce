@@ -13,8 +13,8 @@ public class CatalogController : ControllerBase
     public CatalogController(IMediator mediator) => _mediator = mediator;
 
     [HttpGet("products")]
-    public async Task<IActionResult> GetProducts([FromQuery] Guid? categoryId, CancellationToken ct)
-        => Ok(await _mediator.Send(new GetProductsQuery(categoryId), ct));
+    public async Task<IActionResult> GetProducts([FromQuery] GetProductsQuery query, CancellationToken ct)
+        => Ok(await _mediator.Send(query, ct));
 
     [HttpGet("products/{id:guid}")]
     public async Task<IActionResult> GetProduct(Guid id, CancellationToken ct)

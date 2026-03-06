@@ -1,3 +1,4 @@
+using ECommerce.Application.Common.Caching;
 using ECommerce.Domain.Catalog;
 using ECommerce.Domain.Catalog.Entities;
 using ECommerce.Domain.Catalog.ValueObjects;
@@ -8,7 +9,13 @@ namespace ECommerce.Application.Catalog.Commands;
 public class CreateProductHandler : IRequestHandler<CreateProductCommand, Guid>
 {
     private readonly IProductRepository _products;
-    public CreateProductHandler(IProductRepository products) => _products = products;
+    private readonly ICacheService _cacheService;
+
+    public CreateProductHandler(IProductRepository products, ICacheService cacheService)
+    {
+        _products = products;
+        _cacheService = cacheService;
+    }
 
     public async Task<Guid> Handle(CreateProductCommand cmd, CancellationToken ct)
     {
@@ -16,6 +23,7 @@ public class CreateProductHandler : IRequestHandler<CreateProductCommand, Guid>
             new Money(cmd.Price, cmd.Currency), new StockQuantity(cmd.StockQuantity), cmd.CategoryId);
         await _products.AddAsync(product, ct);
         await _products.SaveChangesAsync(ct);
+        await _cacheService.RemoveByPrefixAsync("catalog", ct);
         return product.Id;
     }
 }
@@ -23,7 +31,13 @@ public class CreateProductHandler : IRequestHandler<CreateProductCommand, Guid>
 public class UpdateProductHandler : IRequestHandler<UpdateProductCommand>
 {
     private readonly IProductRepository _products;
-    public UpdateProductHandler(IProductRepository products) => _products = products;
+    private readonly ICacheService _cacheService;
+
+    public UpdateProductHandler(IProductRepository products, ICacheService cacheService)
+    {
+        _products = products;
+        _cacheService = cacheService;
+    }
 
     public async Task Handle(UpdateProductCommand cmd, CancellationToken ct)
     {
@@ -32,13 +46,20 @@ public class UpdateProductHandler : IRequestHandler<UpdateProductCommand>
         product.UpdateDetails(cmd.Name, cmd.Description, cmd.ImageUrl,
             new Money(cmd.Price, cmd.Currency), cmd.CategoryId);
         await _products.SaveChangesAsync(ct);
+        await _cacheService.RemoveByPrefixAsync("catalog", ct);
     }
 }
 
 public class DeleteProductHandler : IRequestHandler<DeleteProductCommand>
 {
     private readonly IProductRepository _products;
-    public DeleteProductHandler(IProductRepository products) => _products = products;
+    private readonly ICacheService _cacheService;
+
+    public DeleteProductHandler(IProductRepository products, ICacheService cacheService)
+    {
+        _products = products;
+        _cacheService = cacheService;
+    }
 
     public async Task Handle(DeleteProductCommand cmd, CancellationToken ct)
     {
@@ -46,6 +67,7 @@ public class DeleteProductHandler : IRequestHandler<DeleteProductCommand>
             ?? throw new KeyNotFoundException($"Product {cmd.Id} not found.");
         product.Deactivate();
         await _products.SaveChangesAsync(ct);
+        await _cacheService.RemoveByPrefixAsync("catalog", ct);
     }
 }
 
